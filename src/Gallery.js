@@ -28,7 +28,7 @@ export default class Gallery extends PureComponent {
         removeClippedSubviews: true,
         imageComponent: undefined,
         scrollViewStyle: {},
-        listViewProps: []
+        listViewProps: {}
     };
 
     imageRefs = new Map();
