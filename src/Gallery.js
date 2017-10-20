@@ -5,10 +5,6 @@ import { createResponder } from 'react-native-gesture-responder';
 import TransformableImage from './libraries/TransformableImage';
 import ViewPager from './libraries/ViewPager';
 
-const DEFAULT_FLAT_LIST_PROPS = {
-    windowSize: 3
-};
-
 export default class Gallery extends PureComponent {
     static propTypes = {
         ...View.propTypes,
@@ -25,14 +21,14 @@ export default class Gallery extends PureComponent {
         removeClippedSubviews: PropTypes.bool,
         imageComponent: PropTypes.func,
         errorComponent: PropTypes.func,
-        flatListProps: PropTypes.object
+        listViewProps: PropTypes.object
     };
 
     static defaultProps = {
         removeClippedSubviews: true,
         imageComponent: undefined,
         scrollViewStyle: {},
-        flatListProps: DEFAULT_FLAT_LIST_PROPS
+        listViewProps: []
     };
 
     imageRefs = new Map();
@@ -268,12 +264,12 @@ export default class Gallery extends PureComponent {
             gestureResponder = {};
         }
 
-        const flatListProps = {...DEFAULT_FLAT_LIST_PROPS, ...this.props.flatListProps};
+        const listViewProps = {...this.props.listViewProps};
 
         return (
             <ViewPager
               {...this.props}
-              flatListProps={flatListProps}
+              listViewProps={listViewProps}
               ref={'galleryViewPager'}
               scrollViewStyle={this.props.scrollViewStyle}
               scrollEnabled={false}

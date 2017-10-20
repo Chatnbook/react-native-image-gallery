@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import {
     View,
-    FlatList,
+    ListView,
     ViewPropTypes,
     InteractionManager,
     Dimensions
@@ -30,7 +30,7 @@ export default class ViewPager extends PureComponent {
         onPageSelected: PropTypes.func,
         onPageScrollStateChanged: PropTypes.func,
         onPageScroll: PropTypes.func,
-        flatListProps: PropTypes.object
+        listViewProps: PropTypes.object
     };
 
     static defaultProps = {
@@ -40,7 +40,7 @@ export default class ViewPager extends PureComponent {
         pageDataArray: [],
         initialListSize: 10,
         removeClippedSubviews: true,
-        flatListProps: {}
+        listViewProps: {}
     };
 
     currentPage = undefined; // Do not initialize to make onPageSelected(0) be dispatched
@@ -48,7 +48,9 @@ export default class ViewPager extends PureComponent {
     activeGesture = false;
     gestureResponder = undefined;
 
-    state = { width, height };
+    const dataSource
+        = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2}).cloneWithRows([]);
+    state = { width, height, dataSource };
 
     constructor (props) {
         super(props);
@@ -71,7 +73,7 @@ export default class ViewPager extends PureComponent {
                 }
             } else {
                 const curX = this.scroller.getCurrX();
-                this.refs['innerFlatList'] && this.refs['innerFlatList'].scrollToOffset({ offset: curX, animated: false });
+                this.refs['innerListView'] && this.refs['innerListView'].scrollToOffset({ offset: curX, animated: false });
 
                 let position = Math.floor(curX / (this.state.width + this.props.pageMargin));
                 position = this.validPage(position);
@@ -98,7 +100,7 @@ export default class ViewPager extends PureComponent {
     }
 
     componentDidMount () {
-        // FlatList is set to render at initialPage.
+        // listView is set to render at initialPage.
         // The scroller we use is not aware of this.
         // Let it know by simulating most of what happens in scrollToPage()
         this.onPageScrollStateChanged('settling');
@@ -127,7 +129,9 @@ export default class ViewPager extends PureComponent {
         let sizeChanged = this.state.width !== width || this.state.height !== height;
         if (width && height && sizeChanged) {
             this.layoutChanged = true;
-            this.setState({ width, height });
+            const dataSource
+                = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2}).cloneWithRows([]);
+            this.setState({ width, height, dataSource });
         }
     }
 
@@ -214,8 +218,8 @@ export default class ViewPager extends PureComponent {
         if (immediate) {
             InteractionManager.runAfterInteractions(() => {
                 this.scroller.startScroll(this.scroller.getCurrX(), 0, finalX - this.scroller.getCurrX(), 0, 0);
-                this.refs['innerFlatList'].scrollToOffset({offset: finalX, animated: false});
-                this.refs['innerFlatList'].recordInteraction();
+                this.refs['innerListView'].scrollToOffset({offset: finalX, animated: false});
+                this.refs['innerListView'].recordInteraction();
             });
         } else {
             this.scroller.startScroll(this.scroller.getCurrX(), 0, finalX - this.scroller.getCurrX(), 0, 400);
@@ -248,9 +252,10 @@ export default class ViewPager extends PureComponent {
         return index;
     }
 
-    renderRow ({ item, index }) {
+    // renderRow ({ item, index }) {
+    renderRow (rowData, sectionID, rowID, highlightRow) {
         const { width, height } = this.state;
-        let page = this.props.renderPage(item, index);
+        let page = this.props.renderPage(rowData, rowID); // (item, index);
 
         const layout = {
             width,
@@ -262,7 +267,7 @@ export default class ViewPager extends PureComponent {
         let newProps = { ...page.props, ref: page.ref, style };
         const element = React.createElement(page.type, newProps);
 
-        if (this.props.pageMargin > 0 && index > 0) {
+        if (this.props.pageMargin > 0 && rowID > 0) {
             // Do not using margin style to implement pageMargin.
             // The ListView seems to calculate a wrong width for children views with margin.
             return (
@@ -283,11 +288,13 @@ export default class ViewPager extends PureComponent {
         const { width, height } = this.state;
         const { pageDataArray, scrollEnabled, style, scrollViewStyle } = this.props;
 
+        let dataSource = this.state.dataSource;
         if (width && height) {
             let list = pageDataArray;
             if (!list) {
                 list = [];
             }
+            dataSource = dataSource.cloneWithRows(list);
         }
 
         let gestureResponder = this.gestureResponder;
@@ -300,17 +307,20 @@ export default class ViewPager extends PureComponent {
               {...this.props}
               style={[style, { flex: 1 }]}
               {...gestureResponder}>
-                <FlatList
-                  {...this.props.flatListProps}
+                <ListView
+                  {...this.props.listViewProps}
                   style={[{ flex: 1 }, scrollViewStyle]}
-                  ref={'innerFlatList'}
-                  keyExtractor={this.keyExtractor}
+                  ref={'innerListView'}
+                  // keyExtractor={this.keyExtractor}
                   scrollEnabled={false}
                   horizontal={true}
-                  data={pageDataArray}
-                  renderItem={this.renderRow}
+                  enableEmptySections={true}
+                  dataSource={dataSource}
+                  renderRow={this.renderRow}
+                  // data={pageDataArray}
+                  // renderItem={this.renderRow}
                   onLayout={this.onLayout}
-                  getItemLayout={this.getItemLayout}
+                  // getItemLayout={this.getItemLayout}
                   initialScrollIndex={(this.props.initialPage || undefined)}
               />
             </View>

@@ -1,4 +1,4 @@
-# react-native-image-gallery
+listViewlistView# react-native-image-gallery
 
 ## Table of contents
 
@@ -19,7 +19,7 @@ This component aims to be (one of) the best image viewer for react-native apps. 
 * Gesture handle: besides common pan, pinch and doubleTap, this component does well in targeting foucs point( or pivot) when zoom-in and zoom-out.
 * Responder switch: the gesture responder switch is more flexible than any other component, that is, the scrollable container and the wrapped image children perform well in acquiring and releasing gesture responder from/to each other.
 
-This component utilizes **[@ldn0x7dc/react-native-view-pager](https://github.com/ldn0x7dc/react-native-view-pager)** as the scrollable container and **[react-native-transformable-image](https://github.com/ldn0x7dc/react-native-transformable-image)** as the wrapped image. 
+This component utilizes **[@ldn0x7dc/react-native-view-pager](https://github.com/ldn0x7dc/react-native-view-pager)** as the scrollable container and **[react-native-transformable-image](https://github.com/ldn0x7dc/react-native-transformable-image)** as the wrapped image.
 
 This component works on react-native **0.28+**.
 
@@ -66,20 +66,20 @@ Prop | Description | Type | Default
 `initialPage` | Image displayed first | `number` | `0`
 `imageComponent` | Custom function to render your images, 1st param is the image props, 2nd is its dimensions | `function` | `<Image>` component
 `errorComponent` | Custom function to render the page of an image that couldn't be displayed | `function` | A `<View>` with a stylized error
-`flatListProps` | Props to be passed to the underlying `FlatList` | `object` | `{windowSize: 3}`
+`listListProps` | Props to be passed to the underlying `ListView` | `object` | `{windowSize: 3}`
 `pageMargin` | Blank space to show between images | `number` | `0`
 `onPageSelected` | Fired with the index of page that has been selected | `function`
 `onPageScrollStateChanged` | Called when page scrolling state has changed, see [scroll state and events](#scroll-state-and-events) | `function`
 `onPageScroll` | Scroll event, see [scroll state and events](#scroll-state-and-events) | `function`
-`scrollViewStyle` | Custom style for the `FlatList` component | `object` | `{}`
+`scrollViewStyle` | Custom style for the `ListView` component | `object` | `{}`
 `onSingleTapConfirmed` | Fired after a single tap | `function`
 `onLongPress` | Fire after a long press | `function`
 
 ## Scroll state and events
 
-* `onPageScroll` : (event) => {}. 
+* `onPageScroll` : (event) => {}.
 
-  The event object carries following data: 
+  The event object carries following data:
 
   * `position`:  index of first page from the left that is currently visible.
   * `offset`: value from range [0,1) describing stage between page transitions.
