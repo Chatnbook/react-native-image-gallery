@@ -15,6 +15,8 @@ const MIN_FLING_VELOCITY = 0.5;
 // Dimensions are only used initially.
 // onLayout should handle orientation swap.
 const { width, height } = Dimensions.get('window');
+const dataSource
+        = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2}).cloneWithRows([]);
 
 export default class ViewPager extends PureComponent {
     static propTypes = {
@@ -48,8 +50,6 @@ export default class ViewPager extends PureComponent {
     activeGesture = false;
     gestureResponder = undefined;
 
-    const dataSource
-        = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2}).cloneWithRows([]);
     state = { width, height, dataSource };
 
     constructor (props) {
